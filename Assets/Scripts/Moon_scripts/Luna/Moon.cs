@@ -51,23 +51,26 @@ public class Moon : MonoBehaviour
     {
         double T = Astrotime.GetT();
 
-        double L = ((218.316 + 481267.8813 * T) + 360) % 360;
-        double M = ((134.963 + 477198.8676 * T) + 360) % 360;
-        double F = ((93.272 + 483202.0175 * T) + 360) % 360;
+        double L = (218.316 + 481267.8813 * T);
+        L = (L % 360 + 360) % 360;
+        double M = (134.963 + 477198.8676 * T);
+        M = (M % 360 + 360) % 360;
+        double F = (93.272 + 483202.0175 * T);
+        F = (F % 360 + 360) % 360;
 
-        double lambda = L + 6.289 * (Sin(M * PI / 180) * 180 /PI);
-        double beta = 5.128 * (Sin(F * PI / 180) * 180 / PI);
+        double lambda = L + 6.289 * Sin(M * PI / 180);
+        double beta = 5.128 * Sin(F * PI / 180);
         double epsilon = 23.439 - 0.0000004 * T;
 
         RA = (Atan2(Sin(lambda * PI / 180) * Cos(epsilon * PI / 180) - Tan(beta * PI / 180) * Sin(epsilon * PI / 180), Cos(lambda * PI / 180))) * 180 / PI;
-        Dec = Asin(Sin(beta * PI / 180) * Cos(epsilon * PI / 180) + Cos(beta * PI / 180) * Sin(epsilon * PI / 180) * Sin(lambda * PI / 180));
+        Dec = (Asin(Sin(beta * PI / 180) * Cos(epsilon * PI / 180) + Cos(beta * PI / 180) * Sin(epsilon * PI / 180) * Sin(lambda * PI / 180))) * 180 / PI;
 
         RA = (RA + 360) % 360;
 
         double hourAngle = (Astrotime.GetLST() - RA * PI / 180);
 
-        Alt = Asin(Sin(Player.lat * PI / 180) * Sin(Dec) + Cos(Player.lat * PI / 180) * Cos(Dec) * Cos(hourAngle));
-        Az = Atan2(-Sin(hourAngle), Cos(hourAngle) * Sin(Player.lat * PI / 180) - Tan(Dec) * Cos(Player.lat * PI / 180));
+        Alt = Asin(Sin(Player.lat * PI / 180) * Sin(Dec * PI / 180) + Cos(Player.lat * PI / 180) * Cos(Dec * PI / 180) * Cos(hourAngle));
+        Az = Atan2(-Sin(hourAngle), Cos(hourAngle) * Sin(Player.lat * PI / 180) - Tan(Dec * PI / 180) * Cos(Player.lat * PI / 180));
 
         double x = Cos(Alt) * Sin(Az);
         double y = Cos(Alt) * Cos(Az);
@@ -93,6 +96,6 @@ public class Moon : MonoBehaviour
         //double y = Math.Cos(Alt) * Math.Cos(Az);
         //double z = Math.Sin(Alt);
 
-        currentMoonDir = new Vector3((float)x, (float)y, -(float)z);
+        currentMoonDir = new Vector3((float)z, (float)y, (float)x);
     }
 }
