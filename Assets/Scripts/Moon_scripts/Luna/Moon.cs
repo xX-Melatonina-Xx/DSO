@@ -12,15 +12,15 @@ public class Moon : MonoBehaviour
     public static double Dec;
     public static double Alt;
     public static double Az;
+    
     private void Awake()
     {
-        //moonTransform.LookAt(Vector3.zero);
-        //moonTransform.Rotate(Vector3.right, -90f);
-        //moonTransform.Rotate(Vector3.forward, 90f);
-
         CalculateCurrPos();
         transform.rotation = Quaternion.LookRotation(currentMoonDir);
         Debug.Log($"RA {RA}, DEC {Dec}, ALT {Alt}, AZ {Az}");
+
+
+        
         //hourAngle = 0;
         //double peakAlt = Math.Asin(Math.Sin(Player.lat * Math.PI / 180) * Math.Sin(Dec * Math.PI / 180) + Math.Cos(Player.lat * Math.PI / 180) * Math.Cos(Dec * Math.PI / 180) * Math.Cos(hourAngle * Math.PI / 180));
         //double peakAz = Math.Atan2(-Math.Sin(hourAngle * Math.PI / 180), Math.Cos(hourAngle * Math.PI / 180) * Math.Sin(Player.lat * Math.PI / 180) - Math.Tan(Dec * Math.PI / 180) * Math.Cos(Player.lat * Math.PI / 180));
@@ -37,6 +37,8 @@ public class Moon : MonoBehaviour
         //Debug.Log($"Moon elevation units: {elevationUnits}");
         //Debug.Log($"Moon position: {currentMoonPosition}");
         //
+
+        
     }
     void FixedUpdate()
     {
@@ -75,27 +77,7 @@ public class Moon : MonoBehaviour
         double x = Cos(Alt) * Sin(Az);
         double y = Cos(Alt) * Cos(Az);
         double z = Sin(Alt);
-
-        //double lambda = L + 6.289 * Math.Sin(M * Math.PI / 180);
-        //double beta = 5.128 * Math.Sin(F * Math.PI / 180);
-        //double epsilon = 23.439 - 0.0000004 * T;
-
-        //RA = Math.Atan2(Math.Sin(lambda * Math.PI / 180) * Math.Cos(epsilon * Math.PI / 180) - Math.Tan(beta * Math.PI / 180) * Math.Sin(epsilon * Math.PI / 180), Math.Cos(lambda * Math.PI / 180)) * 180 / Math.PI;
-        //Dec = Math.Asin(Math.Sin(beta * Math.PI / 180) * Math.Cos(epsilon * Math.PI / 180) + Math.Cos(beta * Math.PI / 180) * Math.Sin(epsilon * Math.PI / 180) * Math.Sin(lambda * Math.PI / 180)) * 180 / Math.PI;
-        //if (RA < 0)
-        //{
-        //    RA += 360;
-        //}
-
-        //double hourAngle = (Astrotime.GetLST() - RA * Math.PI /180);
-
-        //Alt = Math.Asin(Math.Sin(Player.lat * Math.PI / 180) * Math.Sin(Dec * Math.PI / 180) + Math.Cos(Player.lat * Math.PI / 180) * Math.Cos(Dec * Math.PI / 180) * Math.Cos(hourAngle * Math.PI / 180));
-        //Az = Math.Atan2(-Math.Sin(hourAngle * Math.PI / 180), Math.Cos(hourAngle * Math.PI / 180) * Math.Sin(Player.lat * Math.PI / 180) - Math.Tan(Dec * Math.PI / 180) * Math.Cos(Player.lat * Math.PI / 180));
-
-        //double x = Math.Cos(Alt) * Math.Sin(Az);
-        //double y = Math.Cos(Alt) * Math.Cos(Az);
-        //double z = Math.Sin(Alt);
-
+        
         currentMoonDir = new Vector3((float)z, (float)y, (float)x);
     }
 }
