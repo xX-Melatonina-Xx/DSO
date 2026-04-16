@@ -55,7 +55,7 @@ public class StarfieldController : MonoBehaviour
                     float mag = float.Parse(fields[3], CultureInfo.InvariantCulture);
 
                     float baseSize = distance * 0.003f;
-                    float scale = baseSize * Mathf.Pow(2f, -mag * 0.4f); // im wiêkszy float, tym wiêksza ró¿nica
+                    float scale = baseSize * Mathf.Pow(2f, -mag * 0.4f); // im wiÃªkszy float, tym wiÃªksza rÃ³Â¿nica
 
                     allMatrices.Add(Matrix4x4.TRS(new Vector3((float)-x, (float)z, (float)y), Quaternion.identity, Vector3.one * scale));
                 }
@@ -75,7 +75,6 @@ public class StarfieldController : MonoBehaviour
     {
         for (int i = 0; i < batches.Count; i++)
         {
-            //Graphics.DrawMeshInstanced(starMesh, 0, starMaterial, batches[i], batches[i].Length, null, UnityEngine.Rendering.ShadowCastingMode.Off, false, 6, starviewer);
             Graphics.DrawMeshInstanced(starMesh, 0, starMaterial, batches[i]);
         }
     }
