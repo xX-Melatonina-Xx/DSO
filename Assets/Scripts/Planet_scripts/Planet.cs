@@ -47,7 +47,6 @@ public class Planet
             E = E - (E - e * Sin(E) - M) / (1 - e * Cos(E));
         }
 
-        //double v = 2 * Atan2(Sqrt(1 + e) * Sin(E / 2), Sqrt(1 - e) * Cos(E / 2));
         double v = 2 * Atan(Sqrt((1 + e) / (1 - e)) * Tan(E / 2));
 
         double r = a * (1 - e * Cos(E));
@@ -58,16 +57,6 @@ public class Planet
 
         return new Vector3(x, y, z);
     }
-
-    //public Vector3 GetVectorToPlanetFromEarth()
-    //{
-    //    //Vector3 planetPos = GetHeliocentricPosition() - EARTH.GetHeliocentricPosition();
-
-    //    //float R = UnityEngine.Mathf.Sqrt(planetPos.x * planetPos.x + planetPos.y * planetPos.y + planetPos.z * planetPos.z);
-
-    //    //Vector3 planetDir = new Vector3(-planetPos.x / R, planetPos.y / R, planetPos.z / R);
-    //    //return planetDir;
-    //}
 
     public Vector3 GetPlanetDir()
     {
