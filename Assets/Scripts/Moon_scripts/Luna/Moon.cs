@@ -5,6 +5,7 @@ public class Moon : MonoBehaviour
 {
     [SerializeField] private Transform moonTransform;
     [SerializeField] private float scaleCorrection = 1.3f;
+    [SerializeField] private bool displayDebugInfo = false;
 
     public static Vector3 currentMoonDir;
     public static Vector3 peakPositionDir;
@@ -12,12 +13,13 @@ public class Moon : MonoBehaviour
     public static double Dec;
     public static double Alt;
     public static double Az;
-    
+    public static double hourAngle;
+
     private void Awake()
     {
         CalculateCurrPos();
         transform.rotation = Quaternion.LookRotation(currentMoonDir);
-        Debug.Log($"RA {RA}, DEC {Dec}, ALT {Alt * 180/ PI}, AZ {Az * 180 / PI}");
+        
 
 
         
@@ -69,7 +71,7 @@ public class Moon : MonoBehaviour
 
         RA = (RA + 360) % 360;
 
-        double hourAngle = (Astrotime.GetLST() - RA * PI / 180);
+        hourAngle = (Astrotime.GetLST() - RA * PI / 180);
         hourAngle = (hourAngle + PI) % (2 * PI);
         if (hourAngle < 0) hourAngle += 2 * PI;
         hourAngle -= PI;
@@ -83,9 +85,13 @@ public class Moon : MonoBehaviour
         if (Az > 2 * PI) Az -= 2 * PI;
 
         double x = Cos(Alt) * Sin(Az);
-        double y = Cos(Alt) * Cos(Az);
-        double z = Sin(Alt);
-        
-        currentMoonDir = new Vector3((float)y, (float)-x, (float)-z);
+        double z = Cos(Alt) * Cos(Az);
+        double y = Sin(Alt);
+           
+        if (displayDebugInfo)
+            Debug.Log($"RA {RA}, DEC {Dec}, ALT {Alt * 180 / PI}, AZ {Az * 180 / PI}, HA {(hourAngle * 180 / PI) / 15}");
+
+        currentMoonDir = new Vector3((float)-z, (float)y, (float)x).normalized;
+
     }
 }
