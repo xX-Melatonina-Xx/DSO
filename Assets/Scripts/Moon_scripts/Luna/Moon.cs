@@ -17,7 +17,7 @@ public class Moon : MonoBehaviour
     {
         CalculateCurrPos();
         transform.rotation = Quaternion.LookRotation(currentMoonDir);
-        Debug.Log($"RA {RA}, DEC {Dec}, ALT {Alt}, AZ {Az}");
+        Debug.Log($"RA {RA}, DEC {Dec}, ALT {Alt * 180/ PI}, AZ {Az * 180 / PI}");
 
 
         
@@ -70,14 +70,22 @@ public class Moon : MonoBehaviour
         RA = (RA + 360) % 360;
 
         double hourAngle = (Astrotime.GetLST() - RA * PI / 180);
+        hourAngle = (hourAngle + PI) % (2 * PI);
+        if (hourAngle < 0) hourAngle += 2 * PI;
+        hourAngle -= PI;
 
         Alt = Asin(Sin(Player.lat * PI / 180) * Sin(Dec * PI / 180) + Cos(Player.lat * PI / 180) * Cos(Dec * PI / 180) * Cos(hourAngle));
-        Az = Atan2(-Sin(hourAngle), Cos(hourAngle) * Sin(Player.lat * PI / 180) - Tan(Dec * PI / 180) * Cos(Player.lat * PI / 180));
+        Az = Atan2(Sin(hourAngle), Cos(hourAngle) * Sin(Player.lat * PI / 180) - Tan(Dec * PI / 180) * Cos(Player.lat * PI / 180));
+        Az += PI;
+
+        if (Az < 0) Az += 2 * PI;
+
+        if (Az > 2 * PI) Az -= 2 * PI;
 
         double x = Cos(Alt) * Sin(Az);
         double y = Cos(Alt) * Cos(Az);
         double z = Sin(Alt);
         
-        currentMoonDir = new Vector3((float)z, (float)y, (float)x);
+        currentMoonDir = new Vector3((float)y, (float)-x, (float)-z);
     }
 }

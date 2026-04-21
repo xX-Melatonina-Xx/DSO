@@ -35,9 +35,9 @@ public class Astrotime
 
     public static double GetGST()
     {
-        double greenwichSiderealTime = 280.46061837 + 360.98564736629 * (GetJD() - 2451545.0);
-        greenwichSiderealTime = (greenwichSiderealTime + 360) % 360;
-        return greenwichSiderealTime * Math.PI / 180;
+        double GST = 280.46061837 + 360.98564736629 * (GetJD() - 2451545.0);
+        GST = (GST + 360) % 360;
+        return GST * Math.PI / 180;
     }
 
     public static double GetCurrGMST()
