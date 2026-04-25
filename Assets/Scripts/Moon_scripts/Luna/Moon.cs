@@ -5,53 +5,36 @@ public class Moon : MonoBehaviour
 {
     [SerializeField] private Transform moonTransform;
     [SerializeField] private float scaleCorrection = 1.3f;
+    [SerializeField] private float prefabDistance = 800;
     [SerializeField] private bool displayDebugInfo = false;
 
-    public static Vector3 currentMoonDir;
-    public static Vector3 peakPositionDir;
+    public static Vector3 currentMoonPos;
+    public static Vector3 orbitCenter;
     public static double RA;
     public static double Dec;
     public static double Alt;
     public static double Az;
     public static double hourAngle;
 
+    private static float distanceFactor;
+
     private void Awake()
     {
-        CalculateCurrPos();
-        transform.rotation = Quaternion.LookRotation(currentMoonDir);
-        
+        UpdateAndSetOrbitPath();
+        transform.SetPositionAndRotation(orbitCenter, Quaternion.LookRotation(currentMoonPos * distanceFactor - transform.position, orbitCenter));
 
-
-        
-        //hourAngle = 0;
-        //double peakAlt = Math.Asin(Math.Sin(Player.lat * Math.PI / 180) * Math.Sin(Dec * Math.PI / 180) + Math.Cos(Player.lat * Math.PI / 180) * Math.Cos(Dec * Math.PI / 180) * Math.Cos(hourAngle * Math.PI / 180));
-        //double peakAz = Math.Atan2(-Math.Sin(hourAngle * Math.PI / 180), Math.Cos(hourAngle * Math.PI / 180) * Math.Sin(Player.lat * Math.PI / 180) - Math.Tan(Dec * Math.PI / 180) * Math.Cos(Player.lat * Math.PI / 180));
-
-        //double peakX = Math.Cos(peakAlt) * Math.Sin(peakAz);
-        //double peakY = Math.Cos(peakAlt) * Math.Cos(peakAz);
-        //double peakZ = Math.Sin(peakAlt);
-        //peakPositionDir = new Vector3((float)peakY, (float)peakZ, (float)peakX);
-
-
-        //
-        //float elevationUnits = Vector3.Distance(currentMoonPosition, new Vector3(currentMoonPosition.x, 0, currentMoonPosition.z));
-        //transform.Translate(new Vector3(0, elevationUnits, 0));
-        //Debug.Log($"Moon elevation units: {elevationUnits}");
-        //Debug.Log($"Moon position: {currentMoonPosition}");
-        //
-
-        
     }
     void FixedUpdate()
     {
-        CalculateCurrPos();
-        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(currentMoonDir), 0.0065f);
+        UpdateAndSetOrbitPath();
 
         float tanQuarterDegree = 0.004363f;
-        moonTransform.localScale = Vector3.one * Vector3.Distance(moonTransform.position, Vector3.zero) * tanQuarterDegree * 100 * scaleCorrection;
+
+        moonTransform.localPosition = prefabDistance * Vector3.forward;
+        moonTransform.localScale = prefabDistance * scaleCorrection * tanQuarterDegree * Vector3.one;
     }
 
-    private void CalculateCurrPos()
+    private void UpdateAndSetOrbitPath()
     {
         double T = Astrotime.GetT();
 
@@ -76,8 +59,33 @@ public class Moon : MonoBehaviour
         if (hourAngle < 0) hourAngle += 2 * PI;
         hourAngle -= PI;
 
-        Alt = Asin(Sin(Player.lat * PI / 180) * Sin(Dec * PI / 180) + Cos(Player.lat * PI / 180) * Cos(Dec * PI / 180) * Cos(hourAngle));
-        Az = Atan2(Sin(hourAngle), Cos(hourAngle) * Sin(Player.lat * PI / 180) - Tan(Dec * PI / 180) * Cos(Player.lat * PI / 180));
+        currentMoonPos = GetPosByHourAngle(hourAngle);
+        Vector3 southCulmination = GetPosByHourAngle(0);
+        Vector3 northCulmination = GetPosByHourAngle(PI);
+        Vector3 westCulmination = GetPosByHourAngle(PI / 2);
+        Vector3 eastCulmination = GetPosByHourAngle(3 * PI / 2);
+
+        distanceFactor = prefabDistance / southCulmination.magnitude;
+        orbitCenter = (southCulmination + northCulmination + westCulmination + eastCulmination) / 4 * distanceFactor;
+        transform.SetPositionAndRotation(orbitCenter, Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(currentMoonPos * distanceFactor - transform.position, orbitCenter), 0.0065f));
+
+        if (displayDebugInfo)
+        {
+            Debug.DrawLine(transform.position, moonTransform.position, Color.white);
+            Debug.DrawLine(Vector3.zero, southCulmination * distanceFactor, Color.red);
+            Debug.DrawLine(Vector3.zero, northCulmination * distanceFactor, Color.green);
+            Debug.DrawLine(Vector3.zero, westCulmination * distanceFactor, Color.blue);
+            Debug.DrawLine(Vector3.zero, eastCulmination * distanceFactor, Color.yellow);
+            Debug.DrawLine(Vector3.zero, orbitCenter, Color.purple);
+            Debug.DrawLine(southCulmination * distanceFactor, northCulmination * distanceFactor, Color.cyan);
+            Debug.DrawLine(westCulmination * distanceFactor, eastCulmination * distanceFactor, Color.orange);
+            Debug.Log($"RA {RA}, DEC {Dec}, ALT {Alt * 180 / PI}, AZ {Az * 180 / PI}, HA {(hourAngle * 180 / PI) / 15}");
+        }
+    }
+    public static Vector3 GetPosByHourAngle(double ha)
+    {
+        Alt = Asin(Sin(Player.lat * PI / 180) * Sin(Dec * PI / 180) + Cos(Player.lat * PI / 180) * Cos(Dec * PI / 180) * Cos(ha));
+        Az = Atan2(Sin(ha), Cos(ha) * Sin(Player.lat * PI / 180) - Tan(Dec * PI / 180) * Cos(Player.lat * PI / 180));
         Az += PI;
 
         if (Az < 0) Az += 2 * PI;
@@ -87,11 +95,7 @@ public class Moon : MonoBehaviour
         double x = Cos(Alt) * Sin(Az);
         double z = Cos(Alt) * Cos(Az);
         double y = Sin(Alt);
-           
-        if (displayDebugInfo)
-            Debug.Log($"RA {RA}, DEC {Dec}, ALT {Alt * 180 / PI}, AZ {Az * 180 / PI}, HA {(hourAngle * 180 / PI) / 15}");
 
-        currentMoonDir = new Vector3((float)-z, (float)y, (float)x).normalized;
-
+        return new Vector3((float)-z, (float)y, (float)x);
     }
 }

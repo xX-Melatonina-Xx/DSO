@@ -11,6 +11,8 @@ using UnityEngine;
 public class StarfieldController : MonoBehaviour
 {
     [SerializeField] private bool calculateStars = true;
+    [SerializeField] private float difference = 0.4f; // im wiekszy float, tym wieksza roznica
+    [SerializeField] private float scaleModifier = 0.003f;
     public float distance;
     public float magnitudeLimit;
 
@@ -54,8 +56,8 @@ public class StarfieldController : MonoBehaviour
                     double z = distance * Math.Sin(AltRad);
                     float mag = float.Parse(fields[3], CultureInfo.InvariantCulture);
 
-                    float baseSize = distance * 0.003f;
-                    float scale = baseSize * Mathf.Pow(2f, -mag * 0.4f); // im wiêkszy float, tym wiêksza ró¿nica
+                    float baseSize = distance * scaleModifier;
+                    float scale = baseSize * Mathf.Pow(2f, -mag * difference);
 
                     allMatrices.Add(Matrix4x4.TRS(new Vector3((float)-x, (float)z, (float)y), Quaternion.identity, Vector3.one * scale));
                 }
