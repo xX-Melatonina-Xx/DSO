@@ -7,8 +7,8 @@ public class Player : MonoBehaviour
     [SerializeField] CinemachineCamera cam;
     [SerializeField] CinemachineInputAxisController axisController;
 
-    public static double lat = 51.15;
-    public static double lon = 22.34;
+    public static double lat = 51.25;
+    public static double lon = 22.56;
 
     private InputActions input;
     void Start()

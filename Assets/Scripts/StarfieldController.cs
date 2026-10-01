@@ -15,6 +15,7 @@ public class StarfieldController : MonoBehaviour
     [SerializeField] private float scaleModifier = 0.003f;
     public float distance;
     public float magnitudeLimit;
+    public bool displayStars = true;
 
     public Mesh starMesh;
     public Material starMaterial;
@@ -75,9 +76,12 @@ public class StarfieldController : MonoBehaviour
 
     private void Update()
     {
-        for (int i = 0; i < batches.Count; i++)
+        if (displayStars)
         {
-            Graphics.DrawMeshInstanced(starMesh, 0, starMaterial, batches[i]);
+            for (int i = 0; i < batches.Count; i++)
+            {
+                Graphics.DrawMeshInstanced(starMesh, 0, starMaterial, batches[i]);
+            }
         }
     }
 

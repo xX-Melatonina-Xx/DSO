@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63bf47382f90f4d419a29d06b2630b54, type: 3}
+  m_Name: Uranus
+  m_EditorClassIdentifier: Assembly-CSharp::PlanetScriptableObject
+  a: 19.2184
+  e: 0.046295
+  i: 0.013497
+  OMEGA: 1.291648
+  omega: 1.69285
+  M0: 2.48222
+  n: 0.000205
+  RA: 4.189
+  DEC: -0.264

@@ -3,13 +3,15 @@ using UnityEngine;
 using static System.Math;
 public class Moon : MonoBehaviour
 {
-    [SerializeField] private Transform moonTransform;
+    [SerializeField] private Transform rotationPivotTransform;
+    [SerializeField] private Transform prefabTransform;
     [SerializeField] private float scaleCorrection = 1.3f;
     [SerializeField] private float prefabDistance = 800;
     [SerializeField] private bool displayDebugInfo = false;
 
     public static Vector3 currentMoonPos;
     public static Vector3 orbitCenter;
+    public static Vector3 orbitCenterNormal;
     public static double RA;
     public static double Dec;
     public static double Alt;
@@ -17,21 +19,19 @@ public class Moon : MonoBehaviour
     public static double hourAngle;
 
     private static float distanceFactor;
+    private float tanQuarterDegree = 0.0043633231f;
 
     private void Awake()
     {
         UpdateAndSetOrbitPath();
-        transform.SetPositionAndRotation(orbitCenter, Quaternion.LookRotation(currentMoonPos * distanceFactor - transform.position, orbitCenter));
+        transform.SetPositionAndRotation(orbitCenter, Quaternion.LookRotation(currentMoonPos * distanceFactor - transform.position, orbitCenterNormal));
 
     }
     void FixedUpdate()
     {
         UpdateAndSetOrbitPath();
-
-        float tanQuarterDegree = 0.004363f;
-
-        moonTransform.localPosition = prefabDistance * Vector3.forward;
-        moonTransform.localScale = prefabDistance * scaleCorrection * tanQuarterDegree * Vector3.one;
+        rotationPivotTransform.localPosition = prefabDistance * Vector3.forward;
+        prefabTransform.localScale = 100 * prefabDistance * scaleCorrection * tanQuarterDegree * Vector3.one;
     }
 
     private void UpdateAndSetOrbitPath()
@@ -67,11 +67,17 @@ public class Moon : MonoBehaviour
 
         distanceFactor = prefabDistance / southCulmination.magnitude;
         orbitCenter = (southCulmination + northCulmination + westCulmination + eastCulmination) / 4 * distanceFactor;
-        transform.SetPositionAndRotation(orbitCenter, Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(currentMoonPos * distanceFactor - transform.position, orbitCenter), 0.0065f));
+        orbitCenterNormal = orbitCenter.normalized;
+        if(orbitCenter.y < 0)
+        {
+            orbitCenterNormal *= -1;
+        }
+
+        transform.SetPositionAndRotation(orbitCenter, Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(currentMoonPos * distanceFactor - transform.position, orbitCenterNormal), 0.0065f));
 
         if (displayDebugInfo)
         {
-            Debug.DrawLine(transform.position, moonTransform.position, Color.white);
+            Debug.DrawLine(transform.position, rotationPivotTransform.position, Color.white);
             Debug.DrawLine(Vector3.zero, southCulmination * distanceFactor, Color.red);
             Debug.DrawLine(Vector3.zero, northCulmination * distanceFactor, Color.green);
             Debug.DrawLine(Vector3.zero, westCulmination * distanceFactor, Color.blue);
